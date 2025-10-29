@@ -1,17 +1,41 @@
 // src/order/order.entity.ts
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn} from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm'
+import {TaskPriority, TaskStatus} from '../enums/taskEnums'
 
-@Entity('user') // Table name in PostgreSQL
-export class User {
+@Entity('task') // Table name in PostgreSQL
+export class Task {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({type: 'text'})
-  username: string
+  @Column()
+  title: string
 
-  @Column({type: 'text'})
-  password: string
+  @Column({nullable: true, type: 'text'})
+  description?: string
+
+  @Column({
+    type: 'enum',
+    enum: TaskPriority,
+    default: TaskPriority.MEDIUM,
+  })
+  priority: TaskPriority
+
+  @Column({
+    type: 'enum',
+    enum: TaskStatus,
+    default: TaskStatus.PENDING,
+  })
+  status: TaskStatus
 
   @CreateDateColumn({name: 'created_at'})
   createdAt: Date
+
+  @UpdateDateColumn({name: 'updated_at'})
+  updatedAt: Date
 }
