@@ -6,7 +6,7 @@ import {
   CreateTaskType,
   ITaskType,
 } from '@modules/task/application/types/taskTypes'
-import {UpdateTaskDTO} from '@modules/task/application/dtos/taskDTOs'
+import {UpdateTaskDTO} from '@modules/task/application/dtos/taskDto'
 
 @Injectable()
 export class TaskRepository {

@@ -1,4 +1,8 @@
-import {Injectable} from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import {SecurityUtil} from '../utils/securityUtil'
 import {UserRepository} from '@modules/auth/domain/repositories/userRepository'
 import {JwtService} from '@nestjs/jwt'
@@ -24,13 +28,13 @@ export class AuthService {
   async logInUser(username: string, password: string): Promise<LoginResponse> {
     const user = await this.userRepository.findByUsername(username)
     if (!user) {
-      throw new Error('User not found')
+      throw new NotFoundException('User not found')
     }
     const {password: hashPassword, username: name, id} = user
 
     const isPasswordValid = passwordComparison(password, hashPassword)
     if (!isPasswordValid) {
-      throw new Error('Invalid password')
+      throw new BadRequestException('Invalid password')
     }
 
     const jwtToken = generateJwtToken({id, username: name}, this.jwtService)

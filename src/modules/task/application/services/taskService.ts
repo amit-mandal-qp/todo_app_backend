@@ -1,9 +1,8 @@
-import {Injectable} from '@nestjs/common'
-import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDTOs'
+import {Injectable, NotFoundException} from '@nestjs/common'
+import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
 import {
   AuthenticatedRequest,
   ITaskListType,
-  ITaskType,
   TaskCreatedResponse,
   TaskUpdateResponse,
 } from '../types/taskTypes'
@@ -59,7 +58,7 @@ export class TaskService {
       )
 
     if (!isUserTaskExists) {
-      throw new Error('Task not found for the user')
+      throw new NotFoundException('Task not found for the user')
     }
     await this.taskRepository.update(parseInt(id), updateData)
 
@@ -76,7 +75,7 @@ export class TaskService {
       )
 
     if (!isUserTaskExists) {
-      throw new Error('Task not found for the user')
+      throw new NotFoundException('Task not found for the user')
     }
 
     await Promise.all([

@@ -16,7 +16,7 @@ import {
   TaskCreatedResponse,
   TaskUpdateResponse,
 } from '../types/taskTypes'
-import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDTOs'
+import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
 
 @Controller('task')
 export class TaskController {
