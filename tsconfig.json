@@ -19,9 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@modules": ["./src/modules"],
-      "@modules/*": ["./src/modules/*"],
+      "@modules/*": ["src/modules/*"],
       "@src": ["./src"],
-      "@src/*": ["./src/*"],
+      "@src/*": ["src/*"],
       "@test": ["./test"],
       "@test/*": ["./test/*"]
     }

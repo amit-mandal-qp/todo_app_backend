@@ -2,6 +2,7 @@ import {Injectable, NotFoundException} from '@nestjs/common'
 import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
 import {
   AuthenticatedRequest,
+  ITaskListResponse,
   ITaskListType,
   TaskCreatedResponse,
   TaskUpdateResponse,
@@ -40,10 +41,15 @@ export class TaskService {
 
   async getAllTasksByUser(
     authReq: AuthenticatedRequest,
-  ): Promise<ITaskListType[]> {
-    return await this.userTaskMapRepository.getAllTasksByUser(
+  ): Promise<ITaskListResponse> {
+    const todoList = await this.userTaskMapRepository.getAllTasksByUser(
       parseInt(authReq.user.id),
     )
+
+    return {
+      message: 'Todos retrieved successfully',
+      data: todoList,
+    }
   }
 
   async updateTask(
@@ -58,7 +64,7 @@ export class TaskService {
       )
 
     if (!isUserTaskExists) {
-      throw new NotFoundException('Task not found for the user')
+      throw new NotFoundException('Todo not found!')
     }
     await this.taskRepository.update(parseInt(id), updateData)
 
@@ -75,7 +81,7 @@ export class TaskService {
       )
 
     if (!isUserTaskExists) {
-      throw new NotFoundException('Task not found for the user')
+      throw new NotFoundException('Todo not found!')
     }
 
     await Promise.all([
