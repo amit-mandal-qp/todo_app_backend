@@ -13,6 +13,7 @@ import {
 import {TaskService} from '../services/taskService'
 import {
   AuthenticatedRequest,
+  ITaskListResponse,
   TaskCreatedResponse,
   TaskUpdateResponse,
 } from '../types/taskTypes'
@@ -26,7 +27,7 @@ export class TaskController {
     return this.taskService.getTaskDetails()
   }
 
-  @Post()
+  @Post('create')
   @HttpCode(HttpStatus.CREATED)
   createTask(
     @Req() authReq: AuthenticatedRequest,
@@ -35,9 +36,11 @@ export class TaskController {
     return this.taskService.createTask(authReq, createTaskDTO)
   }
 
-  @Get('getAll')
+  @Get('list')
   @HttpCode(HttpStatus.OK)
-  getAllTasksByUser(@Req() authReq: AuthenticatedRequest) {
+  async getAllTasksByUser(
+    @Req() authReq: AuthenticatedRequest,
+  ): Promise<ITaskListResponse> {
     return this.taskService.getAllTasksByUser(authReq)
   }
 

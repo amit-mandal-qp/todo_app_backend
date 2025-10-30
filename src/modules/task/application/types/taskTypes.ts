@@ -32,6 +32,11 @@ export interface ITaskType {
   status: TaskStatus
 }
 
+export interface ITaskListResponse {
+  message: string
+  data: ITaskType[]
+}
+
 export interface TaskUpdateResponse {
   message: string
 }

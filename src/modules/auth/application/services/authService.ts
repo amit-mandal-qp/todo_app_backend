@@ -6,7 +6,7 @@ import {
 import {SecurityUtil} from '../utils/securityUtil'
 import {UserRepository} from '@modules/auth/domain/repositories/userRepository'
 import {JwtService} from '@nestjs/jwt'
-import {LoginResponse} from '../types/authTypes'
+import {LoginResponse, SignUpResponse} from '../types/authTypes'
 const {passwordHashing, passwordComparison, generateJwtToken} = SecurityUtil
 
 @Injectable()
@@ -19,10 +19,21 @@ export class AuthService {
     return 'Hi Amit !! Welcome to QuestionPro'
   }
 
-  async signUpUser(username: string, password: string): Promise<string> {
+  async signUpUser(
+    username: string,
+    password: string,
+  ): Promise<SignUpResponse> {
+    const isUserExist = await this.userRepository.findByUsername(username)
+    if (isUserExist) {
+      throw new BadRequestException('Username already taken')
+    }
     const hashedPassword = passwordHashing(password)
     await this.userRepository.createUser(username, hashedPassword)
-    return 'User signed up successfully'
+
+    return {
+      message: 'User signed up successfully',
+      data: null,
+    }
   }
 
   async logInUser(username: string, password: string): Promise<LoginResponse> {

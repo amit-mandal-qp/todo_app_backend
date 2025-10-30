@@ -1,4 +1,9 @@
-import {Injectable, NestMiddleware} from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common'
 import {Request, Response, NextFunction} from 'express'
 import {JwtService} from '@nestjs/jwt'
 import {SecurityUtil} from '@modules/auth/application/utils/securityUtil'
@@ -20,19 +25,22 @@ export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization
 
+    if (!authHeader) {
+      throw new UnauthorizedException('Invalid Request')
+    }
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1]
-      try {
-        const decoded = verifyJwtToken(
-          token,
-          this.jwtService,
-        ) as AuthMiddlewareType // Replace with your actual secret key
-        req.user = decoded // Set the decoded data to req.user
-      } catch (error) {
-        // Handle token verification errors (e.g., invalid token, expired token)
-        console.error('JWT verification error:', error)
+      const decoded = verifyJwtToken(
+        token,
+        this.jwtService,
+      ) as AuthMiddlewareType
+
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid Token')
       }
+      req.user = decoded
+      next()
     }
-    next()
   }
 }

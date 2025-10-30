@@ -1,7 +1,7 @@
 import {Body, Controller, Get, HttpCode, HttpStatus, Post} from '@nestjs/common'
 import {AuthService} from '../services/authService'
 import {LoginDTO, SignUpDTO} from '../dtos/authDto'
-import {LoginResponse} from '../types/authTypes'
+import {LoginResponse, SignUpResponse} from '../types/authTypes'
 
 @Controller('auth')
 export class AuthController {
@@ -14,7 +14,7 @@ export class AuthController {
   // sing up
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() signUpDTO: SignUpDTO): Promise<string> {
+  async signUp(@Body() signUpDTO: SignUpDTO): Promise<SignUpResponse> {
     const {username, password} = signUpDTO
     return this.authService.signUpUser(username, password)
   }
