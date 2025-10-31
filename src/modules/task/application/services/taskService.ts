@@ -5,6 +5,7 @@ import {
   ITaskListResponse,
   ITaskListType,
   TaskCreatedResponse,
+  TaskDeleteResponse,
   TaskUpdateResponse,
 } from '../types/taskTypes'
 import {TaskRepository} from '@modules/task/domain/repositories/taskRepository'
@@ -69,11 +70,14 @@ export class TaskService {
     await this.taskRepository.update(parseInt(id), updateData)
 
     return {
-      message: 'Updated Task successfully',
+      message: 'Task updated successfully',
     }
   }
 
-  async deleteTask(authReq: AuthenticatedRequest, id: string): Promise<string> {
+  async deleteTask(
+    authReq: AuthenticatedRequest,
+    id: string,
+  ): Promise<TaskDeleteResponse> {
     const isUserTaskExists =
       await this.userTaskMapRepository.getUserTaskMapData(
         parseInt(authReq.user.id),
@@ -88,6 +92,8 @@ export class TaskService {
       this.userTaskMapRepository.deleteByTaskId(parseInt(id)),
       this.taskRepository.deleteById(parseInt(id)),
     ])
-    return 'Task Deleted Successfully'
+    return {
+      message: 'Task deleted successfully',
+    }
   }
 }

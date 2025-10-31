@@ -16,22 +16,22 @@ describe('AuthController (e2e)', () => {
     await app.init()
   })
 
-  //   it('/POST user signup - Should create a new user in the system', async () => {
-  //     const signUpData = {
-  //       username: 'testuser',
-  //       password: 'testpassword',
-  //     }
+  it('/POST user signup - Should create a new user in the system', async () => {
+    const signUpData = {
+      username: 'testuser',
+      password: 'testpassword',
+    }
 
-  //     const response = await request(app.getHttpServer())
-  //       .post('/auth/signup')
-  //       .send(signUpData)
-  //       .expect(201)
+    const response = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(signUpData)
+      .expect(201)
 
-  //     expect(response.body).toEqual({
-  //       message: 'User signed up successfully',
-  //       data: null,
-  //     })
-  //   })
+    expect(response.body).toEqual({
+      message: 'User signed up successfully',
+      data: null,
+    })
+  })
 
   it('/POST user signup with existing username - Should return an error', async () => {
     const signUpData = {

@@ -12,6 +12,7 @@ import {TypeOrmModule} from '@nestjs/typeorm'
       database: process.env.DB_DATABASE || 'todo_test_db',
       synchronize: true, // IMPORTANT: Use `synchronize: true` for E2E to auto-create schema/tables
       autoLoadEntities: true, // Automatically loads your entity files
+      dropSchema: false,
     }),
   ],
 })

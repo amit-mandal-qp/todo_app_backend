@@ -15,6 +15,7 @@ import {
   AuthenticatedRequest,
   ITaskListResponse,
   TaskCreatedResponse,
+  TaskDeleteResponse,
   TaskUpdateResponse,
 } from '../types/taskTypes'
 import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
@@ -59,7 +60,7 @@ export class TaskController {
   async deleteTask(
     @Req() authReq: AuthenticatedRequest,
     @Param('id') id: string,
-  ): Promise<string> {
+  ): Promise<TaskDeleteResponse> {
     return this.taskService.deleteTask(authReq, id)
   }
 }

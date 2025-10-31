@@ -7,6 +7,7 @@ import {SecurityUtil} from '../utils/securityUtil'
 import {UserRepository} from '@modules/auth/domain/repositories/userRepository'
 import {JwtService} from '@nestjs/jwt'
 import {LoginResponse, SignUpResponse} from '../types/authTypes'
+import {BloomFilterService} from './bloomFilterService'
 const {passwordHashing, passwordComparison, generateJwtToken} = SecurityUtil
 
 @Injectable()
@@ -14,6 +15,7 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private jwtService: JwtService,
+    private readonly bloomFilterService: BloomFilterService,
   ) {}
   getProfileDetails(): string {
     return 'Hi Amit !! Welcome to QuestionPro'
@@ -23,12 +25,19 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<SignUpResponse> {
-    const isUserExist = await this.userRepository.findByUsername(username)
-    if (isUserExist) {
-      throw new BadRequestException('Username already taken')
+    const mightExist = await this.bloomFilterService.mightContain(username)
+
+    if (mightExist) {
+      const isUserExist = await this.userRepository.findByUsername(username)
+      if (isUserExist) {
+        throw new BadRequestException('Username already taken')
+      }
     }
+
     const hashedPassword = passwordHashing(password)
     await this.userRepository.createUser(username, hashedPassword)
+
+    await this.bloomFilterService.add(username)
 
     return {
       message: 'User signed up successfully',

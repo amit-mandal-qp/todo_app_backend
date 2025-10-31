@@ -27,6 +27,7 @@ export class UserTaskMapRepository {
     const userTasks = await this.userTaskMapRepository.find({
       where: {user_id: userId},
       relations: ['task'],
+      order: {task: {id: 'ASC'}},
     })
 
     const formattedTasks: ITaskListType[] = userTasks.map(ut => ({

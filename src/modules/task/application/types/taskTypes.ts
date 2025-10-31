@@ -40,3 +40,7 @@ export interface ITaskListResponse {
 export interface TaskUpdateResponse {
   message: string
 }
+
+export interface TaskDeleteResponse {
+  message: string
+}
