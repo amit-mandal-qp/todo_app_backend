@@ -6,7 +6,13 @@ import {
 import {SecurityUtil} from '../utils/securityUtil'
 import {UserRepository} from '@modules/auth/domain/repositories/userRepository'
 import {JwtService} from '@nestjs/jwt'
-import {LoginResponse, SignUpResponse} from '../types/authTypes'
+import {AuthData} from '../types/authTypes'
+import {
+  BaseResponse,
+  GenericResponse,
+  genericResponse,
+  genericResponseWithData,
+} from '@src/common/responseGeneric'
 const {passwordHashing, passwordComparison, generateJwtToken} = SecurityUtil
 
 @Injectable()
@@ -15,14 +21,11 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
-  getProfileDetails(): string {
-    return 'Hi Amit !! Welcome to QuestionPro'
+  getProfileDetails(): BaseResponse {
+    return genericResponse('Hi Amit !! Welcome to QuestionPro')
   }
 
-  async signUpUser(
-    username: string,
-    password: string,
-  ): Promise<SignUpResponse> {
+  async signUpUser(username: string, password: string): Promise<BaseResponse> {
     const isUserExist = await this.userRepository.findByUsername(username)
     if (isUserExist) {
       throw new BadRequestException('Username already taken')
@@ -30,13 +33,13 @@ export class AuthService {
     const hashedPassword = passwordHashing(password)
     await this.userRepository.createUser(username, hashedPassword)
 
-    return {
-      message: 'User signed up successfully',
-      data: null,
-    }
+    return genericResponse('User signed up successfully')
   }
 
-  async logInUser(username: string, password: string): Promise<LoginResponse> {
+  async logInUser(
+    username: string,
+    password: string,
+  ): Promise<GenericResponse<AuthData>> {
     const user = await this.userRepository.findByUsername(username)
     if (!user) {
       throw new NotFoundException('User not found')
@@ -50,12 +53,9 @@ export class AuthService {
 
     const jwtToken = generateJwtToken({id, username: name}, this.jwtService)
 
-    return {
-      message: 'Login successful',
-      data: {
-        username: name,
-        token: jwtToken,
-      },
-    }
+    return genericResponseWithData('Login successful', {
+      username: name,
+      token: jwtToken,
+    })
   }
 }

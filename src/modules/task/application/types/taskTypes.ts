@@ -11,8 +11,7 @@ export interface CreateTaskType {
   status?: TaskStatus
 }
 
-export interface TaskCreatedResponse {
-  message: string
+export interface ITaskCreatedType {
   taskId: number
 }
 
@@ -32,9 +31,8 @@ export interface ITaskType {
   status: TaskStatus
 }
 
-export interface ITaskListResponse {
-  message: string
-  data: ITaskType[]
+export interface ITaskList {
+  todo_list: ITaskType[]
 }
 
 export interface TaskUpdateResponse {
