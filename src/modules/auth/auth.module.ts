@@ -6,6 +6,7 @@ import {User} from './domain/entities/userEntity'
 import {UserRepository} from './domain/repositories/userRepository'
 import {JwtModule} from '@nestjs/jwt'
 import {jwtConstants} from './application/constants/authConstants'
+import {BloomFilterService} from './application/services/bloomFilterService'
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import {jwtConstants} from './application/constants/authConstants'
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository],
-  exports: [AuthService, UserRepository],
+  providers: [AuthService, UserRepository, BloomFilterService],
+  exports: [AuthService, UserRepository, BloomFilterService],
 })
 export class AuthModule {}

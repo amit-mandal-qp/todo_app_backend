@@ -13,6 +13,7 @@ import {
   genericResponse,
   genericResponseWithData,
 } from '@src/common/responseGeneric'
+import {BloomFilterService} from './bloomFilterService'
 const {passwordHashing, passwordComparison, generateJwtToken} = SecurityUtil
 
 @Injectable()
@@ -20,18 +21,26 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private jwtService: JwtService,
+    private readonly bloomFilterService: BloomFilterService,
   ) {}
   getProfileDetails(): BaseResponse {
     return genericResponse('Hi Amit !! Welcome to QuestionPro')
   }
 
   async signUpUser(username: string, password: string): Promise<BaseResponse> {
-    const isUserExist = await this.userRepository.findByUsername(username)
-    if (isUserExist) {
-      throw new BadRequestException('Username already taken')
+    const mightExist = await this.bloomFilterService.mightContain(username)
+
+    if (mightExist) {
+      const isUserExist = await this.userRepository.findByUsername(username)
+      if (isUserExist) {
+        throw new BadRequestException('Username already taken')
+      }
     }
+
     const hashedPassword = passwordHashing(password)
     await this.userRepository.createUser(username, hashedPassword)
+
+    await this.bloomFilterService.add(username)
 
     return genericResponse('User signed up successfully')
   }
