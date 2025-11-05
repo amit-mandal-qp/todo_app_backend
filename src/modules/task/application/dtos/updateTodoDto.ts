@@ -9,24 +9,6 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator'
 
-export class CreateTaskDTO {
-  @IsString()
-  @IsNotEmpty()
-  title: string
-
-  @IsString()
-  @IsNotEmpty()
-  description: string
-
-  @IsEnum(TaskPriority, {message: 'Invalid priority level provided.'})
-  @IsNotEmpty()
-  priority: TaskPriority
-
-  @IsEnum(TaskStatus, {message: 'Invalid status provided.'})
-  @IsNotEmpty()
-  status: TaskStatus
-}
-
 // 1️⃣ Custom validator to ensure body is not empty
 @ValidatorConstraint({name: 'nonEmptyObject', async: false})
 export class NonEmptyObject implements ValidatorConstraintInterface {
@@ -39,7 +21,7 @@ export class NonEmptyObject implements ValidatorConstraintInterface {
   }
 }
 
-export class UpdateTaskDTO {
+export class UpdateTodoDTO {
   @Validate(NonEmptyObject)
   // 👆 applies the non-empty check on the whole DTO object
   @IsOptional()
