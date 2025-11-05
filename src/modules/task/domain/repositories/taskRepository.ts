@@ -2,11 +2,8 @@ import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {Task} from '../entities/taskEntity'
 import {Repository} from 'typeorm'
-import {
-  CreateTaskType,
-  ITaskType,
-} from '@modules/task/application/types/taskTypes'
-import {UpdateTaskDTO} from '@modules/task/application/dtos/taskDto'
+import {IUpdateTodoInterface} from '@modules/task/application/interfaces/updateTodoInterface'
+import {ICreateTodoInterface} from '@modules/task/application/interfaces/createTodoInterface'
 
 @Injectable()
 export class TaskRepository {
@@ -15,12 +12,12 @@ export class TaskRepository {
     private readonly taskRepository: Repository<Task>,
   ) {}
 
-  async create(taskData: CreateTaskType): Promise<Task> {
+  async create(taskData: ICreateTodoInterface): Promise<Task> {
     const task = this.taskRepository.create(taskData)
     return this.taskRepository.save(task)
   }
 
-  async update(id: number, updateData: UpdateTaskDTO): Promise<void> {
+  async update(id: number, updateData: IUpdateTodoInterface): Promise<void> {
     await this.taskRepository.update({id: id}, updateData)
     return
   }

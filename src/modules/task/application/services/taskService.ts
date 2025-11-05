@@ -1,14 +1,15 @@
 import {Injectable, NotFoundException} from '@nestjs/common'
-import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
 import {
   AuthenticatedRequest,
-  ITaskCreatedType,
+  ITaskCreatedResponseType,
   ITaskList,
 } from '../types/taskTypes'
 import {TaskRepository} from '@modules/task/domain/repositories/taskRepository'
 import {UserTaskMapRepository} from '@modules/task/domain/repositories/userTaskMapRepository'
 import {IResponse} from '@modules/infra/response/responseInterface'
 import {ResponseService} from '@modules/infra/response/responseServic'
+import {ICreateTodoInterface} from '../interfaces/createTodoInterface'
+import {IUpdateTodoInterface} from '../interfaces/updateTodoInterface'
 
 @Injectable()
 export class TaskService {
@@ -25,8 +26,8 @@ export class TaskService {
 
   async createTask(
     authReq: AuthenticatedRequest,
-    task: CreateTaskDTO,
-  ): Promise<IResponse<ITaskCreatedType>> {
+    task: ICreateTodoInterface,
+  ): Promise<IResponse<ITaskCreatedResponseType>> {
     const createdTask = await this.taskRepository.create(task)
 
     const userTaskMapData = {
@@ -59,7 +60,7 @@ export class TaskService {
 
   async updateTask(
     authReq: AuthenticatedRequest,
-    updateData: UpdateTaskDTO,
+    updateData: IUpdateTodoInterface,
     id: string,
   ): Promise<IResponse<{message: string}>> {
     const isUserTaskExists =

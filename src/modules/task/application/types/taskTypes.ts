@@ -11,7 +11,7 @@ export interface CreateTaskType {
   status?: TaskStatus
 }
 
-export interface ITaskCreatedType {
+export interface ITaskCreatedResponseType {
   taskId: number
 }
 
