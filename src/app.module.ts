@@ -12,6 +12,7 @@ import {TaskModule} from '@modules/task/taskModule'
 import {TaskController} from '@modules/task/application/controllers/taskController'
 import {TaskService} from '@modules/task/application/services/taskService'
 import {TestDatabaseModule} from './typeOrmTestConfig'
+import {InfraModule} from '@modules/infra/infraModule'
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import {TestDatabaseModule} from './typeOrmTestConfig'
     }),
     AuthModule,
     TaskModule,
+    InfraModule,
     process.env.NODE_ENV === 'test' ? TestDatabaseModule : DatabaseModule,
   ],
   controllers: [AppController, AuthController, TaskController],

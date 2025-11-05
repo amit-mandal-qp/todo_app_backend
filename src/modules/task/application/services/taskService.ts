@@ -7,27 +7,26 @@ import {
 } from '../types/taskTypes'
 import {TaskRepository} from '@modules/task/domain/repositories/taskRepository'
 import {UserTaskMapRepository} from '@modules/task/domain/repositories/userTaskMapRepository'
-import {
-  BaseResponse,
-  GenericResponse,
-  genericResponse,
-  genericResponseWithData,
-} from '@src/common/responseGeneric'
+import {IResponse} from '@modules/infra/response/responseInterface'
+import {ResponseService} from '@modules/infra/response/responseServic'
 
 @Injectable()
 export class TaskService {
   constructor(
     private readonly taskRepository: TaskRepository,
     private readonly userTaskMapRepository: UserTaskMapRepository,
+    private readonly responseService: ResponseService,
   ) {}
-  getTaskDetails(): BaseResponse {
-    return genericResponse('Hi Amit !! Welcome to QuestionPro')
+  getTaskDetails(): IResponse<{message: string}> {
+    return this.responseService.success({
+      message: 'Hi Amit !! Welcome to QuestionPro',
+    })
   }
 
   async createTask(
     authReq: AuthenticatedRequest,
     task: CreateTaskDTO,
-  ): Promise<GenericResponse<ITaskCreatedType>> {
+  ): Promise<IResponse<ITaskCreatedType>> {
     const createdTask = await this.taskRepository.create(task)
 
     const userTaskMapData = {
@@ -36,32 +35,33 @@ export class TaskService {
     }
 
     await this.userTaskMapRepository.create(userTaskMapData)
+    const response = {
+      taskId: createdTask.id,
+    }
 
-    return genericResponseWithData<ITaskCreatedType>(
-      'Task Created Successfully',
-      {
-        taskId: createdTask.id,
-      },
-    )
+    return this.responseService.success(response, 'Task Created Successfully')
   }
 
   async getAllTasksByUser(
     authReq: AuthenticatedRequest,
-  ): Promise<GenericResponse<ITaskList>> {
+  ): Promise<IResponse<ITaskList>> {
     const todoList = await this.userTaskMapRepository.getAllTasksByUser(
       parseInt(authReq.user.id),
     )
-
-    return genericResponseWithData<ITaskList>('Tasks retrieved successfully', {
+    const response = {
       todo_list: todoList,
-    })
+    }
+    return this.responseService.success(
+      response,
+      'Tasks retrieved successfully',
+    )
   }
 
   async updateTask(
     authReq: AuthenticatedRequest,
     updateData: UpdateTaskDTO,
     id: string,
-  ): Promise<BaseResponse> {
+  ): Promise<IResponse<{message: string}>> {
     const isUserTaskExists =
       await this.userTaskMapRepository.getUserTaskMapData(
         parseInt(authReq.user.id),
@@ -73,13 +73,14 @@ export class TaskService {
     }
     await this.taskRepository.update(parseInt(id), updateData)
 
-    return genericResponse('Updated Task successfully')
+    // return genericResponse('Updated Task successfully')
+    return this.responseService.success({message: 'Updated Task successfully'})
   }
 
   async deleteTask(
     authReq: AuthenticatedRequest,
     id: string,
-  ): Promise<BaseResponse> {
+  ): Promise<IResponse<{message: string}>> {
     const isUserTaskExists =
       await this.userTaskMapRepository.getUserTaskMapData(
         parseInt(authReq.user.id),
@@ -94,6 +95,6 @@ export class TaskService {
       this.userTaskMapRepository.deleteByTaskId(parseInt(id)),
       this.taskRepository.deleteById(parseInt(id)),
     ])
-    return genericResponse('Task Deleted Successfully')
+    return this.responseService.success({message: 'Task Deleted Successfully'})
   }
 }
