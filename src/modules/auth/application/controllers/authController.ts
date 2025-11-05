@@ -2,27 +2,29 @@ import {Body, Controller, Get, HttpCode, HttpStatus, Post} from '@nestjs/common'
 import {AuthService} from '../services/authService'
 import {LoginDTO, SignUpDTO} from '../dtos/authDto'
 import {AuthData} from '../types/authTypes'
-import {BaseResponse, GenericResponse} from '@src/common/responseGeneric'
+import {IResponse} from '@modules/infra/response/responseInterface'
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Get()
-  getProfile(): BaseResponse {
+  getProfile(): IResponse<{message: string}> {
     return this.authService.getProfileDetails()
   }
 
   // sing up
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() signUpDTO: SignUpDTO): Promise<BaseResponse> {
+  async signUp(
+    @Body() signUpDTO: SignUpDTO,
+  ): Promise<IResponse<{message: string}>> {
     const {username, password} = signUpDTO
     return this.authService.signUpUser(username, password)
   }
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDTO: LoginDTO): Promise<GenericResponse<AuthData>> {
+  async login(@Body() loginDTO: LoginDTO): Promise<IResponse<AuthData>> {
     const {username, password} = loginDTO
     return await this.authService.logInUser(username, password)
   }

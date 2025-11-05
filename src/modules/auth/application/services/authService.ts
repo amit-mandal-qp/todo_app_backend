@@ -7,13 +7,9 @@ import {SecurityUtil} from '../utils/securityUtil'
 import {UserRepository} from '@modules/auth/domain/repositories/userRepository'
 import {JwtService} from '@nestjs/jwt'
 import {AuthData} from '../types/authTypes'
-import {
-  BaseResponse,
-  GenericResponse,
-  genericResponse,
-  genericResponseWithData,
-} from '@src/common/responseGeneric'
 import {BloomFilterService} from './bloomFilterService'
+import {ResponseService} from '@modules/infra/response/responseServic'
+import {IResponse} from '@modules/infra/response/responseInterface'
 const {passwordHashing, passwordComparison, generateJwtToken} = SecurityUtil
 
 @Injectable()
@@ -22,12 +18,18 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private jwtService: JwtService,
     private readonly bloomFilterService: BloomFilterService,
+    private readonly responseService: ResponseService,
   ) {}
-  getProfileDetails(): BaseResponse {
-    return genericResponse('Hi Amit !! Welcome to QuestionPro')
+  getProfileDetails(): IResponse<{message: string}> {
+    return this.responseService.success({
+      message: 'Hi Amit !! Welcome to QuestionPro',
+    })
   }
 
-  async signUpUser(username: string, password: string): Promise<BaseResponse> {
+  async signUpUser(
+    username: string,
+    password: string,
+  ): Promise<IResponse<{message: string}>> {
     const mightExist = await this.bloomFilterService.mightContain(username)
 
     if (mightExist) {
@@ -41,14 +43,17 @@ export class AuthService {
     await this.userRepository.createUser(username, hashedPassword)
 
     await this.bloomFilterService.add(username)
+    const response = {
+      message: 'User signed up successfully',
+    }
 
-    return genericResponse('User signed up successfully')
+    return this.responseService.success(response)
   }
 
   async logInUser(
     username: string,
     password: string,
-  ): Promise<GenericResponse<AuthData>> {
+  ): Promise<IResponse<AuthData>> {
     const user = await this.userRepository.findByUsername(username)
     if (!user) {
       throw new NotFoundException('User not found')
@@ -62,9 +67,11 @@ export class AuthService {
 
     const jwtToken = generateJwtToken({id, username: name}, this.jwtService)
 
-    return genericResponseWithData('Login successful', {
+    const response = {
       username: name,
       token: jwtToken,
-    })
+    }
+
+    return this.responseService.success(response, 'Login successful')
   }
 }

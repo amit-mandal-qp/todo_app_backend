@@ -17,13 +17,13 @@ import {
   ITaskList,
 } from '../types/taskTypes'
 import {CreateTaskDTO, UpdateTaskDTO} from '../dtos/taskDto'
-import {BaseResponse, GenericResponse} from '@src/common/responseGeneric'
+import {IResponse} from '@modules/infra/response/responseInterface'
 
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
   @Get()
-  getTask(@Req() authReq: AuthenticatedRequest): BaseResponse {
+  getTask(): IResponse<{message: string}> {
     return this.taskService.getTaskDetails()
   }
 
@@ -32,7 +32,7 @@ export class TaskController {
   createTask(
     @Req() authReq: AuthenticatedRequest,
     @Body() createTaskDTO: CreateTaskDTO,
-  ): Promise<GenericResponse<ITaskCreatedType>> {
+  ): Promise<IResponse<ITaskCreatedType>> {
     return this.taskService.createTask(authReq, createTaskDTO)
   }
 
@@ -40,7 +40,7 @@ export class TaskController {
   @HttpCode(HttpStatus.OK)
   async getAllTasksByUser(
     @Req() authReq: AuthenticatedRequest,
-  ): Promise<GenericResponse<ITaskList>> {
+  ): Promise<IResponse<ITaskList>> {
     return this.taskService.getAllTasksByUser(authReq)
   }
 
@@ -50,7 +50,7 @@ export class TaskController {
     @Req() authReq: AuthenticatedRequest,
     @Body() updateTaskDTO: UpdateTaskDTO,
     @Param('id') id: string,
-  ): Promise<BaseResponse> {
+  ): Promise<IResponse<{message: string}>> {
     return await this.taskService.updateTask(authReq, updateTaskDTO, id)
   }
 
@@ -59,7 +59,7 @@ export class TaskController {
   async deleteTask(
     @Req() authReq: AuthenticatedRequest,
     @Param('id') id: string,
-  ): Promise<BaseResponse> {
+  ): Promise<IResponse<{message: string}>> {
     return this.taskService.deleteTask(authReq, id)
   }
 }
